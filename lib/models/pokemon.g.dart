@@ -9,22 +9,24 @@ part of 'pokemon.dart';
 Pokemon _$PokemonFromJson(Map<String, dynamic> json) {
   return Pokemon(
     name: json['name'] as String,
-    rarity: json['rarity'] as String,
-    type: json['type'] as String,
+    rarity: json['rarity'] as String?,
+    supertype: json['supertype'] as String,
     subtypes:
         (json['subtypes'] as List<dynamic>).map((e) => e as String).toList(),
-    hp: json['hp'] as int,
-    attacks: (json['attacks'] as List<dynamic>)
-        .map((e) => Attack.fromJson(e as Map<String, dynamic>))
+    hp: json['hp'] as String,
+    attacks: (json['attacks'] as List<dynamic>?)
+        ?.map((e) => Attack.fromJson(e as Map<String, dynamic>))
         .toList(),
+    set: Set.fromJson(json['set'] as Map<String, dynamic>),
   );
 }
 
 Map<String, dynamic> _$PokemonToJson(Pokemon instance) => <String, dynamic>{
       'name': instance.name,
       'rarity': instance.rarity,
-      'type': instance.type,
+      'supertype': instance.supertype,
       'subtypes': instance.subtypes,
       'hp': instance.hp,
       'attacks': instance.attacks,
+      'set': instance.set,
     };

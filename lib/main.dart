@@ -1,64 +1,99 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'observer.dart';
+import 'repos/repos.dart';
+import 'bloc/pokemon_bloc.dart';
+import 'package:http/http.dart' as http;
+import 'package:cached_network_image/cached_network_image.dart';
 
 void main() {
-  runApp(MyApp());
+  Bloc.observer = Observer();
+
+  final PokeRepo pokeRepo =
+      PokeRepo(apiClient: ApiClient(httpClient: http.Client()));
+
+  runApp(App(pokeRepo: pokeRepo));
 }
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+class App extends StatelessWidget {
+  final PokeRepo pokeRepo;
+
+  App({required this.pokeRepo});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'PokeStore',
       theme: ThemeData(
-
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(),
+      home: BlocProvider(
+        create: (context) => PokemonBloc(repo: pokeRepo),
+        child: PokeStore(),
+      ),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage();
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
+class PokeStore extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    // TODO: implement build
     return Scaffold(
       appBar: AppBar(
-        title: Text("Poke!"),
+        title: Text("PokeStore"),
+        // actions: [],
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
+        child: BlocBuilder<PokemonBloc, PokemonState>(
+          builder: (context, state) {
+            if (state is InitialPokemon)
+              return Center(
+                  child: ElevatedButton(
+                child: Text("Get"),
+                onPressed: () {
+                  BlocProvider.of<PokemonBloc>(context).add(PokemonRequested());
+                },
+              ));
+            if (state is LoadInProgressPokemon)
+              return Center(child: CircularProgressIndicator());
+            if (state is LoadSuccessPokemon) {
+              final pokemons = state.pokemons;
+              print(pokemons.length);
+              return ListView.builder(
+                padding: EdgeInsets.all(10),
+                itemCount: pokemons.length,
+                itemBuilder: (context, index) {
+                  return Card(
+                    elevation: 2,
+                    child: Column(
+                      children: [
+                        ListTile(
+                          leading: Image(
+                            height: 50,
+                            width: 50,
+                            image: CachedNetworkImageProvider('${pokemons[index].set.images["symbol"]}'),
+                          ),
+                          trailing: IconButton(
+                            iconSize: 28,
+                            icon: Icon(Icons.star_border_outlined),
+                            onPressed: (){},
+                          ),
+                          title: Text(pokemons[index].name),
+                          subtitle: Text(
+                              "${pokemons[index].supertype} - ${pokemons[index].subtypes} (${pokemons[index].rarity})"),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              );
+              // return Text("pokemons loaded. watch print");
+            }
+            return Text("Something went wrong");
+          },
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
       ),
     );
   }

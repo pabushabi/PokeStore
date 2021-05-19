@@ -1,12 +1,11 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:json_serializable/builder.dart';
 
 part "attack.g.dart";
 
 @JsonSerializable()
 class Attack {
   final String name;
-  final String damage;
+  final String? damage;
   final String text;
 
   Attack({

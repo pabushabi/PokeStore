@@ -9,7 +9,7 @@ part of 'attack.dart';
 Attack _$AttackFromJson(Map<String, dynamic> json) {
   return Attack(
     name: json['name'] as String,
-    damage: json['damage'] as String,
+    damage: json['damage'] as String?,
     text: json['text'] as String,
   );
 }
