@@ -16,6 +16,10 @@ dependencies:
   json_serializable: ^4.1.2
   json_annotation: 4.0.1
   cached_network_image: 3.0.0
+  animations: 2.0.0
+  sqflite: ^2.0.0+3
+  hive: ^2.0.4
+  connectivity: ^3.0.3
 
   cupertino_icons: ^1.0.3
 

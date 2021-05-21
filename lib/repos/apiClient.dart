@@ -13,14 +13,21 @@ class ApiClient {
     final url = Uri.parse("${this.url}cards");
     final response = await http.get(url);
     if (response.statusCode != 200) throw Exception("Data unavailable");
-    // print(Pokemon.fromJson(jsonDecode(response.body)["data"][1]).rarity);
     List<Pokemon> res = [];
-    for (int i = 0; i < 250; i++) {
-      // print(i);
+    for (int i = 0; i < jsonDecode(response.body)["pageSize"]; i++) {
       res.add(Pokemon.fromJson(jsonDecode(response.body)["data"][i]));
     }
-    // return Pokemon.fromJson(jsonDecode(response.body)["data"]);
     return res;
   }
 
+  Future<List<Pokemon>> search(String name) async {
+    final url = Uri.parse("${this.url}cards?q=name:$name");
+    final response = await http.get(url);
+    if (response.statusCode != 200) throw Exception("Data unavailable");
+    List<Pokemon> res = [];
+    for (int i = 0; i < jsonDecode(response.body)["pageSize"]; i++) {
+      res.add(Pokemon.fromJson(jsonDecode(response.body)["data"][i]));
+    }
+    return res;
+  }
 }
