@@ -1,3 +1,3 @@
-export 'apiClient.dart';
-export 'pokeRepo.dart';
-export 'dbClient.dart';
+export 'api_client.dart';
+export 'poke_repo.dart';
+export 'db_client.dart';
